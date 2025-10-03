@@ -1,0 +1,14 @@
+{
+  "lastName": "Binh Test6542",
+  "gender": "Nam",
+  "phoneNumber": "0957513250",
+  "idCard": "936685899777",
+  "assignedTo": {
+    "id": 5782,
+    "text": "new 6"
+  },
+  "product": "CRC NTB",
+  "subCamp": "LG",
+  "disbursementChannel": "Cash",
+  "education": "Cao đẳng"
+}
