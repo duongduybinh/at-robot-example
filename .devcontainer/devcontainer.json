@@ -1,0 +1,23 @@
+{
+    "name": "Robot Framework DevContainer",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "robot_devcontainer",
+    "mounts": [
+        "source=${localWorkspaceFolder},target=/robot,type=bind"
+    ],
+    "workspaceFolder": "/robot",
+    "postCreateCommand": "./.devcontainer/init.sh",
+    "remoteUser": "root",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "mechatroner.rainbow-csv",
+                "d-biehl.robotcode",
+                "ms-vscode.live-server"
+            ]
+        },
+        "settings": {
+            "terminal.integrated.defaultProfile.linux": "bash"
+        }
+    }
+}

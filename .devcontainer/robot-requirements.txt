@@ -1,0 +1,7 @@
+robotframework
+robotframework-seleniumlibrary
+robotframework-browser
+robotframework-datadriver
+rpaframework
+robotframework-pabot
+robotframework-jsonlibrary
