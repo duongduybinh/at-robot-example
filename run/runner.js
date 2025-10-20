@@ -125,9 +125,9 @@ var dataFilePath = path.join(safeOutputDir, dataFileName);
   }
   const exitCode = await runCommand("node", [
     scriptPath,
-    ...childArgs,
     "--variable",
-    `DATA_PATH:"${dataFilePath}"`
+    `DATA_PATH:"${dataFilePath}"`,
+    ...childArgs
   ], {
     cwd: __dirname,
     stdio: "inherit"
