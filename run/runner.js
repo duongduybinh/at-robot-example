@@ -38,7 +38,11 @@ var path = require("path");
 var { runCommand, parseBoolean } = require_spawn_runner();
 var args = process.argv.slice(2);
 var funcName = "";
+var test = "all";
 var isManual = false;
+var isSchedule = false;
+var inputPath = "";
+var outputPath = "";
 var childArgs = [];
 for (let i = 0; i < args.length; i++) {
   const arg = args[i];
@@ -46,8 +50,25 @@ for (let i = 0; i < args.length; i++) {
   else if (arg === "--func") funcName = args[++i];
   else if (arg.startsWith("--manual=")) isManual = parseBoolean(arg.split("=")[1]);
   else if (arg === "--manual") isManual = parseBoolean(args[++i]);
+  else if (arg.startsWith("--product=")) test = arg.split("=")[1];
+  else if (arg === "--product") test = args[++i];
+  else if (arg.startsWith("--schedule=")) isSchedule = parseBoolean(arg.split("=")[1]);
+  else if (arg === "--schedule") isSchedule = parseBoolean(args[++i]);
+  else if (arg.startsWith("--input=")) inputPath = arg.split("=")[1];
+  else if (arg === "--input") inputPath = args[++i];
+  else if (arg.startsWith("--output=")) outputPath = arg.split("=")[1];
+  else if (arg === "--output") outputPath = args[++i];
   else childArgs.push(arg);
 }
+console.log("=== Argument Summary ===");
+console.log("Function:", funcName);
+console.log("Product:", test);
+console.log("Manual Mode:", isManual);
+console.log("Schedule Mode:", isSchedule);
+console.log("Input Path:", inputPath || "(default)");
+console.log("Output Path:", outputPath || "(default)");
+console.log("Extra Args:", childArgs.length ? childArgs : "(none)");
+console.log("=========================");
 var file;
 switch (funcName) {
   case "test":
@@ -66,26 +87,50 @@ switch (funcName) {
     file = "robot.js";
     break;
   default:
-    console.error("Unknown command:", funcName);
+    console.error("\u274C Unknown command:", funcName);
     process.exit(1);
 }
 var scriptPath = path.join(__dirname, file);
+var safeOutputDir = outputPath || path.join(__dirname, "output");
+var normalizedProduct = test.toLowerCase();
+var dataFileName;
+switch (normalizedProduct) {
+  case "plntb":
+    dataFileName = "plntb-data.json";
+    break;
+  case "xstu":
+    dataFileName = "xstu-data.json";
+    break;
+  default:
+    dataFileName = "test-data.json";
+    break;
+}
+var dataFilePath = path.join(safeOutputDir, dataFileName);
 (async () => {
-  console.log(...process.argv.slice(1));
-  if (funcName == "robot") {
+  if (funcName === "robot") {
     const scriptFile = isManual ? "csv2json.js" : "generate.js";
-    console.log(`Run with mode ${isManual ? "MANUAL" : "AUTOMATIC"}`);
-    const exitCode2 = await runCommand("node", [path.join(__dirname, scriptFile)], {
+    console.log(`Run with mode: ${isManual ? "MANUAL" : "AUTOMATIC"}`);
+    const exitCodeGen = await runCommand("node", [
+      path.join(__dirname, scriptFile),
+      "--product",
+      test,
+      "--output",
+      safeOutputDir
+    ], {
       cwd: __dirname,
       stdio: "inherit"
     });
-    if (exitCode2 != 0)
-      process.exit(exitCode2);
+    if (exitCodeGen !== 0) process.exit(exitCodeGen);
+    if (isSchedule) process.exit(0);
   }
-  const exitCode = await runCommand("node", [scriptPath, ...childArgs], {
+  const exitCode = await runCommand("node", [
+    scriptPath,
+    ...childArgs,
+    "--variable",
+    `DATA_PATH:"${dataFilePath}"`
+  ], {
     cwd: __dirname,
     stdio: "inherit"
-    // log trực tiếp ra terminal
   });
   process.exit(exitCode);
 })();

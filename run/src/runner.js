@@ -5,6 +5,7 @@ const { runCommand, parseBoolean } = require("./spawn-runner");
 const args = process.argv.slice(2);
 
 let funcName = "";
+let test = "all";
 let isManual = false;
 
 const childArgs = [];
@@ -16,6 +17,8 @@ for (let i = 0; i < args.length; i++) {
     else if (arg === "--func") funcName = args[++i];
     else if (arg.startsWith("--manual=")) isManual = parseBoolean(arg.split("=")[1]);
     else if (arg === "--manual") isManual = parseBoolean(args[++i]);
+    else if (arg.startsWith("--product=")) test = arg.split("=")[1];
+    else if (arg === "--product") test = args[++i];
     else childArgs.push(arg);
 }
 
@@ -54,7 +57,7 @@ const scriptPath = path.join(__dirname, file);
 
         console.log(`Run with mode ${isManual ? "MANUAL" : "AUTOMATIC"}`);
 
-        const exitCode = await runCommand("node", [path.join(__dirname, scriptFile)], {
+        const exitCode = await runCommand("node", [path.join(__dirname, scriptFile), ...['--product', test]], {
             cwd: __dirname,
             stdio: "inherit",
         });

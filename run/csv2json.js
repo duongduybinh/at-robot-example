@@ -468,14 +468,14 @@ var require_util = __commonJS({
         var old = cb;
         cb = function() {
           var $_len = arguments.length + 2;
-          var args = new Array($_len);
+          var args2 = new Array($_len);
           for (var $_i = 2; $_i < $_len; ++$_i) {
-            args[$_i] = arguments[$_i - 2];
+            args2[$_i] = arguments[$_i - 2];
           }
           ;
-          args[0] = old;
-          args[1] = this;
-          return async.runInAsyncScope.apply(async, args);
+          args2[0] = old;
+          args2[1] = this;
+          return async.runInAsyncScope.apply(async, args2);
         };
       }
       return cb;
@@ -2397,12 +2397,12 @@ var require_nodeback = __commonJS({
           promise._fulfill(value);
         } else {
           var $_len = arguments.length;
-          var args = new Array(Math.max($_len - 1, 0));
+          var args2 = new Array(Math.max($_len - 1, 0));
           for (var $_i = 1; $_i < $_len; ++$_i) {
-            args[$_i - 1] = arguments[$_i];
+            args2[$_i - 1] = arguments[$_i];
           }
           ;
-          promise._fulfill(args);
+          promise._fulfill(args2);
         }
         promise = null;
       };
@@ -2921,13 +2921,13 @@ var require_join = __commonJS({
           }
         }
         var $_len = arguments.length;
-        var args = new Array($_len);
+        var args2 = new Array($_len);
         for (var $_i = 0; $_i < $_len; ++$_i) {
-          args[$_i] = arguments[$_i];
+          args2[$_i] = arguments[$_i];
         }
         ;
-        if (fn) args.pop();
-        var ret2 = new PromiseArray(args).promise();
+        if (fn) args2.pop();
+        var ret2 = new PromiseArray(args2).promise();
         return fn !== void 0 ? ret2.spread(fn) : ret2;
       };
     };
@@ -2999,9 +2999,9 @@ var require_call_get = __commonJS({
       }
       Promise2.prototype.call = function(methodName) {
         var $_len = arguments.length;
-        var args = new Array(Math.max($_len - 1, 0));
+        var args2 = new Array(Math.max($_len - 1, 0));
         for (var $_i = 1; $_i < $_len; ++$_i) {
-          args[$_i - 1] = arguments[$_i];
+          args2[$_i - 1] = arguments[$_i];
         }
         ;
         if (true) {
@@ -3012,14 +3012,14 @@ var require_call_get = __commonJS({
                 maybeCaller,
                 void 0,
                 void 0,
-                args,
+                args2,
                 void 0
               );
             }
           }
         }
-        args.push(methodName);
-        return this._then(caller, void 0, void 0, args, void 0);
+        args2.push(methodName);
+        return this._then(caller, void 0, void 0, args2, void 0);
       };
       function namedGetter(obj2) {
         return obj2[this];
@@ -3589,7 +3589,7 @@ var require_promisify = __commonJS({
           var argumentOrder = switchCaseArgumentOrder(newParameterCount);
           var shouldProxyThis = typeof callback === "string" || receiver2 === THIS;
           function generateCallForArgumentCount(count) {
-            var args = argumentSequence(count).join(", ");
+            var args2 = argumentSequence(count).join(", ");
             var comma = count > 0 ? ", " : "";
             var ret2;
             if (shouldProxyThis) {
@@ -3597,7 +3597,7 @@ var require_promisify = __commonJS({
             } else {
               ret2 = receiver2 === void 0 ? "ret = callback({{args}}, nodeback); break;\n" : "ret = callback.call(receiver, {{args}}, nodeback); break;\n";
             }
-            return ret2.replace("{{args}}", args).replace(", ", comma);
+            return ret2.replace("{{args}}", args2).replace(", ", comma);
           }
           function generateArgumentSwitchCase() {
             var ret2 = "";
@@ -6538,11 +6538,11 @@ var require_memoize = __commonJS({
         throw new TypeError(FUNC_ERROR_TEXT);
       }
       var memoized = function() {
-        var args = arguments, key = resolver ? resolver.apply(this, args) : args[0], cache = memoized.cache;
+        var args2 = arguments, key = resolver ? resolver.apply(this, args2) : args2[0], cache = memoized.cache;
         if (cache.has(key)) {
           return cache.get(key);
         }
-        var result = func.apply(this, args);
+        var result = func.apply(this, args2);
         memoized.cache = cache.set(key, result) || cache;
         return result;
       };
@@ -7568,12 +7568,26 @@ var path = require("path");
 var fs = require("fs");
 var csvtojson = require_v2();
 var inputPath = path.join(__dirname, "data.csv");
-console.log("CSV -> JSON");
+var outputDir = __dirname;
+var args = process.argv.slice(2);
+for (let i = 0; i < args.length; i++) {
+  const arg = args[i];
+  if (arg.startsWith("--input=")) inputPath = path.resolve(arg.split("=")[1]);
+  else if (arg === "--input") inputPath = path.resolve(args[++i]);
+  else if (arg.startsWith("--output=")) outputDir = path.resolve(arg.split("=")[1]);
+  else if (arg === "--output") outputDir = path.resolve(args[++i]);
+}
+console.log("CSV \u2192 JSON converter");
+console.log("Input file:", inputPath);
+console.log("Output directory:", outputDir);
 (async () => {
   try {
+    if (!fs.existsSync(inputPath)) throw new Error(`Kh\xF4ng t\xECm th\u1EA5y file input: ${inputPath}`);
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+      console.log(`T\u1EA1o th\u01B0 m\u1EE5c output: ${outputDir}`);
+    }
     const csv = fs.readFileSync(inputPath, "utf-8");
-    console.log("Input", inputPath);
-    console.log(csv);
     const jsonArray = await csvtojson({
       colParser: {
         confirmInforConsultation: (item) => {
@@ -7582,16 +7596,18 @@ console.log("CSV -> JSON");
         }
       }
     }).fromString(csv);
-    if (!jsonArray || jsonArray.length == 0)
-      throw new Error("Kh\xF4ng c\xF3 d\u1EEF li\u1EC7u");
+    if (!jsonArray || jsonArray.length === 0) {
+      throw new Error("Kh\xF4ng c\xF3 d\u1EEF li\u1EC7u h\u1EE3p l\u1EC7 trong CSV.");
+    }
     for (let index = 0; index < jsonArray.length; index++) {
       const json = jsonArray[index];
-      const outputPath = path.join(__dirname, json.testType.toLocaleLowerCase() + "-data.json");
+      const fileName = (json.testType || `data_${index + 1}`).toLowerCase() + "-data.json";
+      const outputPath = path.join(outputDir, fileName);
       fs.writeFileSync(outputPath, JSON.stringify(json, null, 2), "utf-8");
-      console.log("Output", outputPath);
-      console.log(json);
+      console.log(`\u2705 Output: ${outputPath}`);
     }
+    console.log("Ho\xE0n t\u1EA5t chuy\u1EC3n \u0111\u1ED5i CSV \u2192 JSON.");
   } catch (err) {
-    console.error("L\u1ED7i khi \u0111\u1ECDc CSV:", err);
+    console.error("L\u1ED7i khi x\u1EED l\xFD:", err.message);
   }
 })();

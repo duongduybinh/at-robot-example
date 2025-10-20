@@ -111,22 +111,24 @@ class DataProvider {
 
 const __dirname = path.dirname(process.argv[1]);
 
-let test = "all";
+let product = "all";
 let isPLNTB = true;
 let isXSTU = true;
 
 // Phân tích tham số --func --manual
 const args = process.argv.slice(2);
+console.log('Arg', args);
 for (let i = 0; i < args.length; i++) {
   const arg = args[i];
-  if (arg.startsWith("--test=")) test = arg.split("=")[1];
-  else if (arg === "--test") test = args[++i];
+  console.log(arg);
+  if (arg.startsWith("--product=")) product = arg.split("=")[1];
+  else if (arg === "--product") product = args[++i];
 }
-
-if (test.toLocaleLowerCase() == 'plntb') {
+console.log('Product', product);
+if (product.toLocaleLowerCase() == 'plntb') {
   isPLNTB = true;
   isXSTU = false;
-} else if (test.toLocaleLowerCase() == 'xstu') {
+} else if (product.toLocaleLowerCase() == 'xstu') {
   isPLNTB = false;
   isXSTU = true;
 }
