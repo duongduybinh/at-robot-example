@@ -110,27 +110,66 @@ switch (normalizedProduct) {
     break;
 }
 var dataFilePath = path.join(safeOutputDir, dataFileName);
+var FILE_PATH = `/app/data/${normalizedProduct}/schedule/data.csv`;
 (async () => {
   if (funcName === "robot") {
-    const scriptFile = isManual ? "csv2json.js" : "generate.js";
-    console.log(`Run with mode: ${isManual ? "MANUAL" : "AUTOMATIC"}`);
-    const exitCodeGen = await runCommand("node", [
-      path.join(__dirname, scriptFile),
-      "--product",
-      test,
-      "--output",
-      safeOutputDir
-    ], {
-      cwd: __dirname,
-      stdio: "inherit"
-    });
-    if (exitCodeGen !== 0) process.exit(exitCodeGen);
-    if (isSchedule) process.exit(0);
+    if (isSchedule && isManual) {
+      console.log(`Run with mode: Schedule & Manual`);
+      if (fs.existsSync(FILE_PATH)) {
+        if (!fs.existsSync(safeOutputDir)) {
+          fs.mkdirSync(safeOutputDir, { recursive: true });
+        }
+        const destPath = path.join(dataFilePath, path.basename(FILE_PATH));
+        console.log(`Move file ${FILE_PATH} --> ${destPath}`);
+        fs.renameSync(FILE_PATH, destPath);
+        const exitCodeGen = await runCommand("node", [
+          path.join(__dirname, "csv2json.js"),
+          "--product",
+          test,
+          "--input",
+          destPath,
+          "--output",
+          safeOutputDir
+        ], {
+          cwd: __dirname,
+          stdio: "inherit"
+        });
+        if (exitCodeGen !== 0) process.exit(exitCodeGen);
+      } else {
+        const scriptFile = "generate.js";
+        console.log(`Kh\xF4ng t\xECm th\u1EA5y file -> generate`);
+        const exitCodeGen = await runCommand("node", [
+          path.join(__dirname, scriptFile),
+          "--product",
+          test,
+          "--output",
+          safeOutputDir
+        ], {
+          cwd: __dirname,
+          stdio: "inherit"
+        });
+        if (exitCodeGen !== 0) process.exit(exitCodeGen);
+      }
+    } else {
+      const scriptFile = isManual ? "csv2json.js" : "generate.js";
+      console.log(`Run with mode: ${isManual ? "MANUAL" : "AUTOMATIC"}`);
+      const exitCodeGen = await runCommand("node", [
+        path.join(__dirname, scriptFile),
+        "--product",
+        test,
+        "--output",
+        safeOutputDir
+      ], {
+        cwd: __dirname,
+        stdio: "inherit"
+      });
+      if (exitCodeGen !== 0) process.exit(exitCodeGen);
+    }
   }
   const exitCode = await runCommand("node", [
     scriptPath,
     "--variable",
-    `DATA_PATH:"${dataFilePath}"`,
+    `DATA_PATH:${dataFilePath}`,
     "--testpath",
     testPath,
     ...childArgs
