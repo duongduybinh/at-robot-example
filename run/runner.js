@@ -43,6 +43,7 @@ var isManual = false;
 var isSchedule = false;
 var inputPath = "";
 var outputPath = "";
+var testPath = "";
 var childArgs = [];
 for (let i = 0; i < args.length; i++) {
   const arg = args[i];
@@ -58,6 +59,8 @@ for (let i = 0; i < args.length; i++) {
   else if (arg === "--input") inputPath = args[++i];
   else if (arg.startsWith("--output=")) outputPath = arg.split("=")[1];
   else if (arg === "--output") outputPath = args[++i];
+  else if (arg.startsWith("--testpath=")) testPath = arg.split("=")[1];
+  else if (arg === "--testpath") testPath = args[++i];
   else childArgs.push(arg);
 }
 console.log("=== Argument Summary ===");
@@ -67,6 +70,7 @@ console.log("Manual Mode:", isManual);
 console.log("Schedule Mode:", isSchedule);
 console.log("Input Path:", inputPath || "(default)");
 console.log("Output Path:", outputPath || "(default)");
+console.log("Test Path:", testPath || "(default)");
 console.log("Extra Args:", childArgs.length ? childArgs : "(none)");
 console.log("=========================");
 var file;
@@ -127,6 +131,8 @@ var dataFilePath = path.join(safeOutputDir, dataFileName);
     scriptPath,
     "--variable",
     `DATA_PATH:"${dataFilePath}"`,
+    "--testpath",
+    testPath,
     ...childArgs
   ], {
     cwd: __dirname,
