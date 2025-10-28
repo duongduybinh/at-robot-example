@@ -114,13 +114,13 @@ var dataFilePath = path.join(safeOutputDir, dataFileName);
 var FILE_PATH = `/app/data/${normalizedProduct}/schedule/data.csv`;
 (async () => {
   if (funcName === "robot") {
-    if (isSchedule && isManual) {
+    if (isSchedule) {
       console.log(`Run with mode: Schedule & Manual`);
       if (fs.existsSync(FILE_PATH)) {
         if (!fs.existsSync(safeOutputDir)) {
           fs.mkdirSync(safeOutputDir, { recursive: true });
         }
-        const destPath = path.join(dataFilePath, path.basename(FILE_PATH));
+        const destPath = path.join(safeOutputDir, path.basename(FILE_PATH));
         console.log(`Move file ${FILE_PATH} --> ${destPath}`);
         fs.renameSync(FILE_PATH, destPath);
         const exitCodeGen = await runCommand("node", [
