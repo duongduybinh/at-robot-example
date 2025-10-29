@@ -38,7 +38,7 @@ Follow Lead
     New Test Case
     ${fullName}=    Get Test Data    $.fullName
     Take Screenshot
-    Inject Script With Retry   ${CURDIR}/../../libs/tests/xstu/pre-submit/change-sales-stage.js    retries=30    timeoutMs=5000    delayBetweenRetries=5000
+    Inject Script With Retry   ${CURDIR}/../../libs/tests/xstu/pre-submit/change-sales-stage.js    retries=20    timeoutMs=5000    delayBetweenRetries=1000
     Wait For Title    XSTU - ${fullName[0]}
     Take Screenshot
     ${logs}=    Get Test Logs
