@@ -186,6 +186,7 @@ Load Test Data
 Get Test Data
     [Arguments]    ${json_path}
     ${json}=    Get Variable Value    $TEST_DATA
+    Log    ${json}
     ${result}=    Get Value From Json    ${json}    ${json_path}
     RETURN    ${result}
     
