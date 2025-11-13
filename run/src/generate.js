@@ -29,8 +29,8 @@ class DataProvider {
   }
 
   static generateName() {
-    const firstNames = ["Nguyễn","Trần","Lê","Phạm","Hoàng","Vũ","Võ","Đặng","Bùi","Đỗ","Phan","Huỳnh"];
-    const lastNames = ["Bình","Nam","Trang","Linh","Huy","Dũng","Hà","Phúc","Tú","Nhung","Tâm","Vy"];
+    const lastNames  = ["Nguyễn","Trần","Lê","Phạm","Hoàng","Vũ","Võ","Đặng","Bùi","Đỗ","Phan","Huỳnh"];
+    const firstNames = ["Bình","Nam","Trang","Linh","Huy","Dũng","Hà","Phúc","Tú","Nhung","Tâm","Vy"];
     const first = firstNames[DataProvider.randomInt(0, firstNames.length - 1)];
     const last = lastNames[DataProvider.randomInt(0, lastNames.length - 1)];
     return [first, `${last}${DataProvider.randomInt(0, 10000)}`];
